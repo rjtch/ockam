@@ -43,6 +43,7 @@ pub struct EnrollCommand {
     /// Use PKCE authorization flow
     #[arg(long)]
     pub authorization_code_flow: bool,
+    
 }
 
 impl EnrollCommand {
