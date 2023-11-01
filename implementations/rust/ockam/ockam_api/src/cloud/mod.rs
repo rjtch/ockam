@@ -9,3 +9,4 @@ pub mod secure_clients;
 pub mod share;
 pub mod space;
 pub mod subscription;
+pub mod policy;

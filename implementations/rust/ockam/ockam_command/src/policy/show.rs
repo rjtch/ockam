@@ -3,13 +3,13 @@ use clap::Args;
 use ockam::Context;
 use ockam_abac::{Action, Resource};
 use ockam_api::address::extract_address_value;
-use ockam_api::nodes::models::policy::Policy;
-use ockam_api::nodes::BackgroundNode;
+use ockam_api::nodes::InMemoryNode;
 use ockam_core::api::Request;
 
+use crate::CommandGlobalOpts;
+use ockam_api::cloud::policy::ControllerPolicy;
 use crate::policy::policy_path;
 use crate::util::node_rpc;
-use crate::CommandGlobalOpts;
 
 #[derive(Clone, Debug, Args)]
 pub struct ShowCommand {
@@ -35,9 +35,15 @@ async fn rpc(ctx: Context, (opts, cmd): (CommandGlobalOpts, ShowCommand)) -> mie
 
 async fn run_impl(ctx: &Context, opts: CommandGlobalOpts, cmd: ShowCommand) -> miette::Result<()> {
     let node_name = extract_address_value(&cmd.at)?;
-    let req = Request::get(policy_path(&cmd.resource, &cmd.action));
-    let node = BackgroundNode::create(ctx, &opts.state, &node_name).await?;
-    let policy: Policy = node.ask(ctx, req).await?;
-    println!("{}", policy.expression());
+    let node = InMemoryNode::start(ctx, &opts.state).await?;
+    let controller = node.create_controller().await?;
+
+//    let req = Request::get(policy_path(&cmd.resource, &cmd.action));
+    let policy = controller.show_policy(
+        ctx,
+        node_name,
+        &cmd.resource,
+        &cmd.action).await?;
+    println!("{:?}", policy);
     Ok(())
 }
