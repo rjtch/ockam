@@ -38,12 +38,11 @@ async fn run_impl(ctx: &Context, opts: CommandGlobalOpts, cmd: ShowCommand) -> m
     let node = InMemoryNode::start(ctx, &opts.state).await?;
     let controller = node.create_controller().await?;
 
-//    let req = Request::get(policy_path(&cmd.resource, &cmd.action));
+    let path = policy_path(&cmd.resource, &cmd.action);
     let policy = controller.show_policy(
         ctx,
         node_name,
-        &cmd.resource,
-        &cmd.action).await?;
+        path).await?;
     println!("{:?}", policy);
     Ok(())
 }

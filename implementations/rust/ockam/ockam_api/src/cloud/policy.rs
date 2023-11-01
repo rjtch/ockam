@@ -24,8 +24,7 @@ pub trait ControllerPolicy {
     async fn show_policy(&self,
                          ctx: &Context,
                          node_name: String,
-                         resource: &Resource,
-                         action: &Action) -> miette::Result<Expression>;
+                         path: String) -> miette::Result<Expression>;
 
     async fn list_policies(&self,
                            ctx: &Context,
@@ -56,10 +55,9 @@ impl ControllerPolicy for Controller {
     async fn show_policy(&self,
                          ctx: &Context,
                          node_name: String,
-                         resource: &Resource,
-                         action: &Action) -> miette::Result<Expression> {
-        trace!(target: TARGET, %node_name, %resource, %action, "Showing Policy");
-        let req = Request::get(format!("/policy/{resource}/{action}"));
+                         path: String) -> miette::Result<Expression> {
+        trace!(target: TARGET, %node_name, %path, "Showing Policy");
+        let req = Request::get(path);
         self.0
             .ask(ctx, "policy", req)
             .await
